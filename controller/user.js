@@ -1,6 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const Users = require('../model/models');
+const Users = require('../model/users');
 // const bodyParser = require('body-parser');
 
 
@@ -31,6 +31,7 @@ router.get('/',async (req,res)=>{
     }
 })
 
+// TODO:Need to be fix it will not work
 // Check if user exist
 router.get('/:id', async (req,res)=>{
     try{
