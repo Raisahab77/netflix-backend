@@ -7,6 +7,7 @@ const movies = require('./controller/movies');
 const notification = require('./controller/notification');
 const list = require('./controller/list');
 const myList = require('./controller/my-list');
+const movieDeatil = require('./controller/movie-details');
 
 const app = express();
 const cors = require("cors");
@@ -26,6 +27,7 @@ app.use('/movies',movies);
 app.use('/notifications',notification);
 app.use('/lists',list);
 app.use('/my-list',myList);
+app.use('/movie-detail',movieDeatil);
 
 app.get('/test',(req,res)=>{
     res.status(401).send("401");

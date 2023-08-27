@@ -11,7 +11,15 @@ router.get('/:id',async(req,res)=>{
     try
     {
         const mylist = await myList.find({userId:id});
-        console.log(mylist);
+        for(let i=0;i<mylist.length;i++){
+            const movie =  await Movies.findOne({_id:mylist[i].movieId});
+            console.log(movie);
+            movieId = mylist[i].movieId;
+            console.log('*********************');
+            console.log(movieId);
+            mylist[i].movieId = movie;
+        }
+        console.log(myList);
         let response = {
             "statusCode":200,
             "msg":"Success",
