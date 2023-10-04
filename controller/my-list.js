@@ -41,4 +41,15 @@ router.post('/',(req,res)=>{
     })
 })
 
+router.delete('/:id',async (req,res)=>{
+    const id = req.params.id;
+    try {
+        const deleteData =  await myList.findOneAndDelete({'_id':id});
+        console.log(deleteData);
+        res.status(200).send({"id":id});    
+    } catch (error) {
+        console.log(error);
+    }
+})
+
 module.exports = router;

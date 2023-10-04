@@ -1,6 +1,7 @@
 const express = require('express');
 const List = require('../model/list');
 const Movies = require('../model/movies');
+const myList = require('../model/my-list');
 // const bodyParser = require('body-parser');
 
 
@@ -33,14 +34,44 @@ router.get('/',async(req,res)=>{
         }else{
             list = await List.aggregate([{$sample:{size:10}}]);
         }
+        const mylist = await myList.find({userId:"64cf52f937de0de62654d170"});
+        // let myListMap =  mylist.map(element => element.id);
+        // console.log(myListMap);
+        // console.log(typeof(myListMap));
+        let myListArr = [];
+        for(let i = 0; i<mylist.length;i++){
+            myListArr.push({
+                "movieId":mylist[i].movieId.valueOf(),
+                "_id":mylist[i]._id.valueOf()
+            });
+        }
         for(let i=0;i<list.length;i++){
             for(let j = 0; j<list[i].movieId.length;j++){
                 const movie =  await Movies.findOne({_id:list[i].movieId[j]});
-                console.log(movie);
-                movieId = list[i].movieId[j];
-                console.log('*********************');
-                console.log(movieId);
+                // console.log(movie);
+                // movieId = list[i].movieId[j];
+                if(myListArr.includes(movie._id.valueOf())){
+                    movie['isFavourite'] = true;
+                }else{
+                    movie['isFavourite'] = false;
+                }
                 list[i].movieId[j] = movie;
+            }
+        }
+        let newObj = JSON.parse(JSON.stringify(list));
+        for(let i=0;i<newObj.length;i++){
+            for(let j = 0; j<newObj[i].movieId.length;j++){
+                let movieId = newObj[i].movieId[j]._id;
+                for(let k = 0; k < myListArr.length; k++){
+                    if(myListArr[k].movieId == movieId){
+                        newObj[i].movieId[j]['isFavourite'] = true;
+                        newObj[i].movieId[j]['myList'] = myListArr[k];
+                        break;
+                    }else{
+                        newObj[i].movieId[j]['isFavourite'] = false;
+                        newObj[i].movieId[j]['myList'] = myListArr[k];
+                    }
+                }
             }
         }
 
@@ -48,8 +79,9 @@ router.get('/',async(req,res)=>{
         let response = {
             "statusCode":200,
             "msg":"Success",
-            "data":list
+            "data":newObj
         };
+        // console.log(list);
         res.send(response);
     }catch(e){
         res.send(e);
